@@ -1,15 +1,19 @@
-function [buildingPosList] = piBuildingPosList(buildingList, objects)
+function buildingPosList = piBuildingPosList(buildingList, thisR)
 % Randomly place buildings in one given region.
 %
-% Given the info of spare region(lenth in x axis, lenth in y axis and
-% coordinate origin) and a building list including the
-% building name and size. Return a settle list, record the settle positions
-% and building name.
+% Synopsis
+%   buildingPosList = piBuildingPosList(buildingList, thisR)
+%
+% Description
+%  Given the info of spare region(lenth in x axis, lenth in y axis and
+%  coordinate origin) and a building list including the building name and
+%  size. Return a settle list, record the settle positions and building
+%  name.
 %
 % Input:
-%       objects: recipe of assets.      e.g. thisR
-%       biulding_list: including the building size and name
-
+%       buildingList: including the building size and name
+%       thisR: recipe of assets.      e.g. thisR
+%
 % input of subfunction:(generated according to Input)
 %       lenx_tmp: lenth of spare region in x axis
 %       leny_tmp: lenth of spare region in y axis
@@ -26,7 +30,6 @@ function [buildingPosList] = piBuildingPosList(buildingList, objects)
 %
 % Parameter:
 %       offset: adjust the interval between the buildings. default is 2
-%
 %
 % Jiaqi Zhang
 % 09.21.2018
@@ -50,16 +53,18 @@ for mm = 1:length(buildingList)
     sum = buildingList(mm).geometry.size.w + sum;
 end
 aveW = sum/length(buildingList)+10; % calculate the average width of all the buildings
-                                    % variable aveW can be used to delete
-                                    % unnecessary buildings in the scene
-for kk = 1:length(objects.assets)
-    name = strsplit(objects.assets(kk).name, '_');
+
+% We need to update for the new format of the assets within the recipe
+% The first step is to figure out how to go through all the relevant
+% assets.
+for kk = 1:length(thisR.assets)
+    name = strsplit(thisR.assets(kk).name, '_');
     if strcmp(name{1}, 'Plane') % if the object is a building region.
         count_before = count;
         type = name{2};     % extract region information
-        lenx_tmp = objects.assets(kk).size.l;
-        leny_tmp = objects.assets(kk).size.w;
-        coordination = objects.assets(kk).position;
+        lenx_tmp = thisR.assets(kk).size.l;
+        leny_tmp = thisR.assets(kk).size.w;
+        coordination = thisR.assets(kk).position;
         y_up = coordination(2);
         coordination = [coordination(1),coordination(3)];
         switch type
@@ -80,22 +85,6 @@ for kk = 1:length(objects.assets)
         end
         [buildingPosList_tmp, count] = buildingPlan(building_list, ...
             lenx_tmp, leny_tmp, coordination, buildingPosList_tmp, count, type, ankor, aveW);
-        
-        % %% Delete unnecessary buildings from building list
-        % if initialStruct == 1   % if it's first time use struct, initial it
-        %     FieldName = fieldnames(buildingPosList_tmp)';
-        %     FieldName{2,1} = {};
-        %     buildingPosListDeleted = struct(FieldName{:});
-        %     initialStruct = 0;
-        % end
-        %     finalCount = count_before;
-        %     margin = 10;
-        %     for ll = count_before:count
-        %         if (abs(coordination(1)-buildingPosList_tmp(ll).position(1))<(lenx_tmp/margin))||(abs(coordination(2)-buildingPosList_tmp(ll).position(2))<(leny_tmp/margin))
-        %             buildingPosListDeleted(finalCount) = buildingPosList_tmp(ll);
-        %             finalCount = finalCount + 1;
-        %         end
-        %     end
         
         %% change the structure of the output data
         for jj = count_before:length(buildingPosList_tmp)
@@ -159,9 +148,9 @@ for kk = 1:length(objects.assets)
                 end
         end
         
-        % tmp = tmp + 1; 
+        % tmp = tmp + 1;
         % disp(tmp);
-
+        
     end
     
 end
@@ -169,7 +158,6 @@ end
 end
 
 %%
-% ----------------------------
 function [settle_list, count] = buildingPlan(building_list, lenx_tmp, ...
     leny_tmp, coordination, settle_list, count, type, ankor, aveW)
 offset = 0.2; % adjust the interval berween the buildings. Don't too big! Or might cause problem!

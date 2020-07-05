@@ -2,12 +2,15 @@ function [road,thisR] = piRoadCreate(varargin)
 % Generate a roadtype struct for Sumo TrafficFlow generation
 %
 % Syntax
+%   [road,thisR] = piRoadCreate(varargin)
 %
 % Brief description
 %
 % Input
-%  N/A
-% Key/value pairs
+%   N/A
+%
+% Optional Key/value pairs
+%
 %  roadtype - See piRoadTypes
 %  sceneType  
 %  trafficflowDensity - low or high
@@ -15,7 +18,14 @@ function [road,thisR] = piRoadCreate(varargin)
 %  scitran
 %  cloudRender
 %
+% Output
+%   road:
+%   thisR:  Recipe to render the road
+%
 % Zhenyi, 2018
+%
+% See also
+%
 
 %%
 
@@ -77,9 +87,7 @@ end
 
 %% Check the road type and downald road assets
 
-
 acqs = roadSession.acquisitions.findOne(sprintf('label=%s',roadtype));
-
 
 % This is the rendering recipe for the road session
 % fileType_json ='source code'; % json

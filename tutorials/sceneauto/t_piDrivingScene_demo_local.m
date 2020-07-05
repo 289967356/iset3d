@@ -1,9 +1,9 @@
 %% Automatically assemble an automotive scene and render using Google Cloud
 %
-%    t_piDrivingScene_demo
+%    t_piDrivingScene_demo_local
 %
 % Dependencies
-%    ISETCloud, ISET3d, ISETCam and scitran
+%    ISET3d, ISETCam and scitran
 %
 % Description:
 %   Generate driving scenes using the gcloud (kubernetes) methods.  The
@@ -214,3 +214,5 @@ img = piSensorImage(oi,'filename',fname,'pixel size',2.5);
 ieNewGraphWin
 imagesc(ieObject.metadata.meshImage)
 %}
+
+%%
